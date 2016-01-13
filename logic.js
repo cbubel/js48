@@ -275,7 +275,7 @@ var Board = function(game_type, size) {
   this.addPiece();
 }
 
-function drawBG() {
+var drawBG = function() {
   ctx.beginPath();
   ctx.rect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "forestgreen";
@@ -284,7 +284,7 @@ function drawBG() {
   return;
 }
 
-function draw() {
+var draw = function() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawBG();
