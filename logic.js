@@ -13,6 +13,7 @@ var Board = function(game_type, size) {
   this.base_pieces = [2, 4, 8];
   this.pieces = [];
   this.block_size = (width - ((this.size + 1) * border_size)) / this.size;
+  var made_move = false;
 
   for(var i = 0; i < this.size; i++) {
     this.pieces[i] = []
@@ -68,10 +69,11 @@ var Board = function(game_type, size) {
             piece = {row: row, col: col, val: this.pieces[row][col]};
           }
           else {
-            if(this.pieces[row][col] == piece.val) {
+            if(this.pieces[row][col] === piece.val) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
               this.pieces[row][col] = 0;
               piece = undefined;
+              made_move = true;
             }
             else {
               piece = {row: row, col: col, val: this.pieces[row][col]};
@@ -98,6 +100,7 @@ var Board = function(game_type, size) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
               this.pieces[row][col] = 0;
               piece = undefined;
+              made_move = true;
             }
             else {
               piece = {row: row, col: col, val: this.pieces[row][col]};
@@ -124,6 +127,7 @@ var Board = function(game_type, size) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
               this.pieces[row][col] = 0;
               piece = undefined;
+              made_move = true;
             }
             else {
               piece = {row: row, col: col, val: this.pieces[row][col]};
@@ -150,6 +154,7 @@ var Board = function(game_type, size) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
               this.pieces[row][col] = 0;
               piece = undefined;
+              made_move = true;
             }
             else {
               piece = {row: row, col: col, val: this.pieces[row][col]};
@@ -162,26 +167,40 @@ var Board = function(game_type, size) {
 
   // Shifts the board on a left keypress
   this.evalLeft = function() {
+    var saw_piece = false;
+
     for(var row = 0; row < this.size; row++) {
       for(var col = this.size - 1; col >= 0; col--) {
         if(this.pieces[row][col] === 0) {
           this.pieces[row].splice(col, 1);
           this.pieces[row].push(0);
+          if(saw_piece) made_move = true;
+        }
+        else {
+          saw_piece = true;
         }
       }
+      saw_piece = false;
     }
     return;
   }
 
   // Shifts the board on a right keypress
   this.evalRight = function() {
+    var saw_piece = false;
+
     for(var row = 0; row < this.size; row++) {
       for(var col = 0; col < this.size; col++) {
         if(this.pieces[row][col] === 0) {
           this.pieces[row].splice(col, 1);
           this.pieces[row].unshift(0);
+          if(saw_piece) made_move = true;
+        }
+        else {
+          saw_piece = true;
         }
       }
+      saw_piece = false;
     }
     return;
   }
@@ -189,17 +208,21 @@ var Board = function(game_type, size) {
   // Shifts the board on an up keypress
   this.evalUp = function() {
     var removed = [];
+    var saw_zero = false;
 
     for(var col = 0; col < this.size; col++) {
       removed = [];
       for(var row = 0; row < this.size; row++) {
         if(this.pieces[row][col] === 0) {
           this.pieces[row].splice(col, 1);
+          saw_zero = true;
         }
         else {
           removed.push(this.pieces[row].splice(col, 1)[0]);
+          if(saw_zero) made_move = true;
         }
       }
+      saw_zero = false;
       for(var i = 0; i < this.size; i++) {
         if(removed.length > 0) {
           this.pieces[i].splice(col, 0, removed.shift());
@@ -215,17 +238,21 @@ var Board = function(game_type, size) {
   // Shifts the board on a down keypress
   this.evalDown = function() {
     var removed = [];
+    var saw_zero = false;
 
     for(var col = 0; col < this.size; col++) {
       removed = [];
       for(var row = this.size - 1; row >= 0; row--) {
         if(this.pieces[row][col] === 0) {
           this.pieces[row].splice(col, 1);
+          saw_zero = true;
         }
         else {
           removed.push(this.pieces[row].splice(col, 1)[0]);
+          if(saw_zero) made_move = true;
         }
       }
+      saw_zero = false;
       for(var i = this.size - 1; i >= 0; i--) {
         if(removed.length > 0) {
           this.pieces[i].splice(col, 0, removed.shift());
@@ -289,9 +316,11 @@ var Board = function(game_type, size) {
       this.evalDown();
     }
 
-    if(dir >= 37 && dir <= 40) {
+    if(dir >= 37 && dir <= 40 && made_move) {
       this.addPiece();
     }
+    made_move = false;
+
     return;
   }.bind(this)
 
