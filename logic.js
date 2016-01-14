@@ -357,14 +357,14 @@ var drawDividers = function() {
   ctx.closePath();
 }
 
-var draw = function() {
+var draw = function(board) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawBG();
   drawDividers();
   board.draw();
 
-  requestAnimationFrame(draw);
+  requestAnimationFrame(function() {draw(board)});
 }
 
 
@@ -372,5 +372,4 @@ var board = new Board(2048, 4);
 
 document.addEventListener("keyup", board.move, false);
 
-// setInterval(draw, 10);
-draw();
+draw(board);
