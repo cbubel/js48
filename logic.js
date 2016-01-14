@@ -10,7 +10,7 @@ var block_colors = {2: "#efe3dc", 4: "#eddfcb", 8: "#f1b07d", 16: "#f3946b", 32:
 var Board = function(game_type, size) {
   this.game_type = game_type;
   this.size = size;
-  this.base_pieces = [2, 4, 8];
+  this.base_pieces = [2, 4];
   this.pieces = [];
   this.block_size = (width - ((this.size + 1) * border_size)) / this.size;
   var made_move = false;
@@ -324,7 +324,8 @@ var Board = function(game_type, size) {
     return;
   }.bind(this)
 
-  // Initialize with one random piece
+  // Initialize with two random pieces
+  this.addPiece();
   this.addPiece();
 }
 
