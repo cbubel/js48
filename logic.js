@@ -20,42 +20,36 @@ var Board = function(game_type, size) {
     }
   }
 
-  // this.draw = function() {
-  //   for(var row = 0; row < this.size; row++) {
-  //     for(var col = 0; col < this.size; col++) {
-  //       if(this.pieces[row][col] !== 0) {
-  //         this.drawPiece(row, col);
-  //       }
-  //     }
-  //   }
-  //   return;
-  // }
+  this.removeDiv = function(row, col) {
+    var piece = document.getElementById("p" + row + "_" + col);
+    piece.remove();
+  }
 
-  // this.drawPiece = function(row, col) {
-  //   ctx.beginPath();
-  //   ctx.rect(col * (this.block_size + border_size) + border_size, row * (this.block_size + border_size) + border_size, this.block_size, this.block_size);
-  //   ctx.fillStyle = block_colors[this.pieces[row][col]];
-  //   ctx.fill();
-  //   ctx.closePath();
-  //
-  //   ctx.font = "bold 36px Arial";
-  //   if(this.pieces[row][col] <= 4) {
-  //     ctx.fillStyle = "#746d62";
-  //   }
-  //   else {
-  //     ctx.fillStyle = "#FFFFFF";
-  //   }
-  //   var text = this.pieces[row][col];
-  //   var text_width = ctx.measureText(text).width;
-  //
-  //   var h_mid = col * (this.block_size + border_size) + border_size + (this.block_size - text_width) / 2;
-  //
-  //   // TODO: Figure out relationship to avoid random -26
-  //   var v_mid = (row + 1) * (this.block_size + border_size) - (this.block_size - 26) / 2;
-  //
-  //   ctx.fillText(text, h_mid, v_mid);
-  //   return;
-  // }
+  this.upgradeDiv = function(row, col, val) {
+    var piece = document.getElementById("p" + row + "_" + col);
+    piece.innerHTML = val;
+    piece.style.backgroundColor = block_colors[val];
+    if(val <= 4) {
+      piece.style.color = "#746d62";
+    }
+    else {
+      piece.style.color = "#FFFFFF";
+    }
+  }
+
+  this.moveDivHorizontal = function(row, to_col, from_col, val) {
+    var old_piece = document.getElementById("p" + row + "_" + from_col);
+    old_piece.remove();
+
+    this.createNewDiv(row, to_col, val);
+  }
+
+  this.moveDivVertical = function(col, to_row, from_row, val) {
+    var old_piece = document.getElementById("p" + from_row + "_" + col);
+    old_piece.remove();
+
+    this.createNewDiv(to_row, col, val);
+  }
 
   // Combines pieces along rows
   this.combineRightHorizontal = function() {
@@ -71,7 +65,9 @@ var Board = function(game_type, size) {
           else {
             if(this.pieces[row][col] === piece.val) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
+              this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
+              this.removeDiv(row, col);
               piece = undefined;
               made_move = true;
             }
@@ -98,7 +94,9 @@ var Board = function(game_type, size) {
           else {
             if(this.pieces[row][col] === piece.val) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
+              this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
+              this.removeDiv(row, col);
               piece = undefined;
               made_move = true;
             }
@@ -125,7 +123,9 @@ var Board = function(game_type, size) {
           else {
             if(this.pieces[row][col] === piece.val) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
+              this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
+              this.removeDiv(row, col);
               piece = undefined;
               made_move = true;
             }
@@ -152,7 +152,9 @@ var Board = function(game_type, size) {
           else {
             if(this.pieces[row][col] === piece.val) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
+              this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
+              this.removeDiv(row, col);
               piece = undefined;
               made_move = true;
             }
@@ -167,102 +169,110 @@ var Board = function(game_type, size) {
 
   // Shifts the board on a left keypress
   this.evalLeft = function() {
-    var saw_piece = false;
+    var spaces = [];
 
-    for(var row = 0; row < this.size; row++) {
-      for(var col = this.size - 1; col >= 0; col--) {
+    for (var row = 0; row < this.size; row++) {
+      for (var col = 0; col < this.size; col++) {
         if(this.pieces[row][col] === 0) {
-          this.pieces[row].splice(col, 1);
-          this.pieces[row].push(0);
-          if(saw_piece) made_move = true;
+          spaces.push(col);
         }
         else {
-          saw_piece = true;
+          if(spaces.length > 0) {
+            var moving_to = spaces.shift();
+            var val = this.pieces[row][col];
+            this.pieces[row][moving_to] = val;
+            this.pieces[row][col] = 0;
+            spaces.push(col);
+
+            made_move = true;
+
+            this.moveDivHorizontal(row, moving_to, col, val);
+          }
         }
       }
-      saw_piece = false;
+      spaces = [];
     }
-    return;
   }
 
   // Shifts the board on a right keypress
   this.evalRight = function() {
-    var saw_piece = false;
+    var spaces = [];
 
     for(var row = 0; row < this.size; row++) {
-      for(var col = 0; col < this.size; col++) {
+      for(var col = this.size - 1; col >= 0; col--) {
         if(this.pieces[row][col] === 0) {
-          this.pieces[row].splice(col, 1);
-          this.pieces[row].unshift(0);
-          if(saw_piece) made_move = true;
+          spaces.push(col);
         }
         else {
-          saw_piece = true;
+          if(spaces.length > 0) {
+            var moving_to = spaces.shift();
+            var val = this.pieces[row][col];
+            this.pieces[row][moving_to] = val;
+            this.pieces[row][col] = 0;
+            spaces.push(col);
+
+            made_move = true;
+
+            this.moveDivHorizontal(row, moving_to, col, val);
+          }
         }
       }
-      saw_piece = false;
+      spaces = [];
     }
-    return;
   }
 
   // Shifts the board on an up keypress
   this.evalUp = function() {
-    var removed = [];
-    var saw_zero = false;
+    var spaces = [];
 
     for(var col = 0; col < this.size; col++) {
-      removed = [];
       for(var row = 0; row < this.size; row++) {
         if(this.pieces[row][col] === 0) {
-          this.pieces[row].splice(col, 1);
-          saw_zero = true;
+          spaces.push(row);
         }
         else {
-          removed.push(this.pieces[row].splice(col, 1)[0]);
-          if(saw_zero) made_move = true;
+          if(spaces.length > 0) {
+            var moving_to = spaces.shift();
+            var val = this.pieces[row][col];
+            this.pieces[moving_to][col] = val;
+            this.pieces[row][col] = 0;
+            spaces.push(row);
+
+            made_move = true;
+
+            this.moveDivVertical(col, moving_to, row, val);
+          }
         }
       }
-      saw_zero = false;
-      for(var i = 0; i < this.size; i++) {
-        if(removed.length > 0) {
-          this.pieces[i].splice(col, 0, removed.shift());
-        }
-        else {
-          this.pieces[i].splice(col, 0, 0);
-        }
-      }
+      spaces = [];
     }
-    return;
   }
 
   // Shifts the board on a down keypress
   this.evalDown = function() {
-    var removed = [];
-    var saw_zero = false;
+    var spaces = [];
 
     for(var col = 0; col < this.size; col++) {
-      removed = [];
       for(var row = this.size - 1; row >= 0; row--) {
         if(this.pieces[row][col] === 0) {
-          this.pieces[row].splice(col, 1);
-          saw_zero = true;
+          spaces.push(row);
         }
         else {
-          removed.push(this.pieces[row].splice(col, 1)[0]);
-          if(saw_zero) made_move = true;
+          if(spaces.length > 0) {
+            var moving_to = spaces.shift();
+            var val = this.pieces[row][col];
+            this.pieces[moving_to][col] = val;
+            this.pieces[row][col] = 0;
+            spaces.push(row);
+
+            made_move = true;
+
+            this.moveDivVertical(col, moving_to, row, val);
+          }
         }
       }
-      saw_zero = false;
-      for(var i = this.size - 1; i >= 0; i--) {
-        if(removed.length > 0) {
-          this.pieces[i].splice(col, 0, removed.shift());
-        }
-        else {
-          this.pieces[i].splice(col, 0, 0);
-        }
-      }
+      spaces = [];
     }
-    return;
   }
 
   this.createNewDiv = function(row, col, val) {
@@ -272,8 +282,6 @@ var Board = function(game_type, size) {
     div.className = "piece";
     div.style.left = col * (this.block_size + border_size) + "px";
     div.style.top = row * (this.block_size + border_size) + "px";
-    // div.style.left = col * this.block_size + "px";
-    // div.style.top = row * this.block_size + "px";
     div.style.backgroundColor = block_colors[val];
     if(val <= 4) {
       div.style.color = "#746d62";
@@ -285,8 +293,6 @@ var Board = function(game_type, size) {
     container.appendChild(div);
   }
   // Creates a new piece on the board at random
-  // Initial thought is this should be called
-  // immediately before move takes place
   this.addPiece = function() {
     var possible_pos = [];
 
@@ -350,47 +356,6 @@ var Board = function(game_type, size) {
   this.addPiece();
 }
 
-// var drawBG = function() {
-//   ctx.beginPath();
-//   ctx.rect(0, 0, canvas.width, canvas.height);
-//   ctx.fillStyle = "#cec0b6";
-//   ctx.fill();
-//   ctx.closePath();
-//   return;
-// }
-
-// var drawDividers = function() {
-//   ctx.beginPath();
-//   var block_size = board.block_size;
-//   for (var i = 0; i <= board.size; i++) {
-//     if(i === board.size) {
-//       ctx.rect(0, height - border_size, width, border_size);
-//       ctx.rect(width - border_size, 0, border_size, height);
-//     }
-//     else {
-//       ctx.rect(0, i * (block_size + border_size), width, border_size);
-//       ctx.rect(i * (block_size + border_size), 0, border_size, height);
-//     }
-//   }
-//
-//   ctx.fillStyle = "#bdaca1";
-//   ctx.fill();
-//   ctx.closePath();
-// }
-
-// var draw = function(board) {
-//   ctx.clearRect(0, 0, canvas.width, canvas.height);
-//
-//   drawBG();
-//   drawDividers();
-//   board.draw();
-//
-//   requestAnimationFrame(function() {draw(board)});
-// }
-
-
 var board = new Board(2048, 4);
 
 document.addEventListener("keyup", board.move, false);
-
-// draw(board);
