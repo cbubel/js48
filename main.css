@@ -5,10 +5,27 @@
 
 body {
   margin-top: 20px;
+  font-family: arial;
 }
 
-canvas {
-  background: #eee;
-  display: block;
+#container {
+  width: 490px;
+  height: 490px;
+  border: 10px solid #bdaca1;
+  box-sizing: border-box;
   margin: 0 auto;
+  background: #cec0b6;
+  position: relative;
+}
+
+.piece {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 36px;
+  line-height: 36px;
+  display: inline-block;
+  vertical-align: middle;
 }

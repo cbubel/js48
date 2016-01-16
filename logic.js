@@ -1,9 +1,7 @@
-var canvas = document.getElementById("myCanvas");
-var ctx = canvas.getContext("2d");
+var container = document.getElementById("container");
 
-
-var width = canvas.width;
-var height = canvas.height;
+var width = 490;
+var height = 490;
 var border_size = 10;
 var block_colors = {2: "#efe3dc", 4: "#eddfcb", 8: "#f1b07d", 16: "#f3946b", 32: "#f47b66", 64: "#f55e44", 128: "#eccc7b", 256: "#eccb6b", 512: "#ecc65a", 1024: "#eec540", 2048: "#efc12f"};
 
@@ -22,40 +20,42 @@ var Board = function(game_type, size) {
     }
   }
 
-  this.draw = function() {
-    for(var row = 0; row < this.size; row++) {
-      for(var col = 0; col < this.size; col++) {
-        if(this.pieces[row][col] !== 0) {
-          this.drawPiece(row, col);
-        }
-      }
-    }
-    return;
-  }
+  // this.draw = function() {
+  //   for(var row = 0; row < this.size; row++) {
+  //     for(var col = 0; col < this.size; col++) {
+  //       if(this.pieces[row][col] !== 0) {
+  //         this.drawPiece(row, col);
+  //       }
+  //     }
+  //   }
+  //   return;
+  // }
 
-  this.drawPiece = function(row, col) {
-    ctx.beginPath();
-    ctx.rect(col * (this.block_size + border_size) + border_size, row * (this.block_size + border_size) + border_size, this.block_size, this.block_size);
-    ctx.fillStyle = block_colors[this.pieces[row][col]];
-    ctx.fill();
-    ctx.closePath();
-
-    ctx.font = "bold 36px Arial";
-    if(this.pieces[row][col] <= 4) {
-      ctx.fillStyle = "#746d62";
-    }
-    else {
-      ctx.fillStyle = "#FFFFFF";
-    }
-    var text = this.pieces[row][col];
-    var text_width = ctx.measureText(text).width;
-
-    var h_mid = col * (this.block_size + border_size) + border_size + (this.block_size - text_width) / 2;
-    // TODO: Figure out relationship to avoid random -26
-    var v_mid = (row + 1) * (this.block_size + border_size) - (this.block_size - 26) / 2;
-    ctx.fillText(text, h_mid, v_mid);
-    return;
-  }
+  // this.drawPiece = function(row, col) {
+  //   ctx.beginPath();
+  //   ctx.rect(col * (this.block_size + border_size) + border_size, row * (this.block_size + border_size) + border_size, this.block_size, this.block_size);
+  //   ctx.fillStyle = block_colors[this.pieces[row][col]];
+  //   ctx.fill();
+  //   ctx.closePath();
+  //
+  //   ctx.font = "bold 36px Arial";
+  //   if(this.pieces[row][col] <= 4) {
+  //     ctx.fillStyle = "#746d62";
+  //   }
+  //   else {
+  //     ctx.fillStyle = "#FFFFFF";
+  //   }
+  //   var text = this.pieces[row][col];
+  //   var text_width = ctx.measureText(text).width;
+  //
+  //   var h_mid = col * (this.block_size + border_size) + border_size + (this.block_size - text_width) / 2;
+  //
+  //   // TODO: Figure out relationship to avoid random -26
+  //   var v_mid = (row + 1) * (this.block_size + border_size) - (this.block_size - 26) / 2;
+  //
+  //   ctx.fillText(text, h_mid, v_mid);
+  //   return;
+  // }
 
   // Combines pieces along rows
   this.combineRightHorizontal = function() {
@@ -265,6 +265,25 @@ var Board = function(game_type, size) {
     return;
   }
 
+  this.createNewDiv = function(row, col, val) {
+    var div = document.createElement('div');
+
+    div.id = "p" + row + "_" + col;
+    div.className = "piece";
+    div.style.left = col * (this.block_size + border_size) + "px";
+    div.style.top = row * (this.block_size + border_size) + "px";
+    // div.style.left = col * this.block_size + "px";
+    // div.style.top = row * this.block_size + "px";
+    div.style.backgroundColor = block_colors[val];
+    if(val <= 4) {
+      div.style.color = "#746d62";
+    }
+    else {
+      div.style.color = "#FFFFFF";
+    }
+    div.innerHTML = val;
+    container.appendChild(div);
+  }
   // Creates a new piece on the board at random
   // Initial thought is this should be called
   // immediately before move takes place
@@ -290,10 +309,12 @@ var Board = function(game_type, size) {
 
     // Assign the new piece
     this.pieces[new_idx.row][new_idx.col] = random_base_piece;
+    this.createNewDiv(new_idx.row, new_idx.col, random_base_piece);
   }
 
   this.move = function(e) {
     var dir = e.keyCode;
+    this.prev_pieces = this.pieces;
 
     // Left
     if(dir === 37) {
@@ -329,47 +350,47 @@ var Board = function(game_type, size) {
   this.addPiece();
 }
 
-var drawBG = function() {
-  ctx.beginPath();
-  ctx.rect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#cec0b6";
-  ctx.fill();
-  ctx.closePath();
-  return;
-}
+// var drawBG = function() {
+//   ctx.beginPath();
+//   ctx.rect(0, 0, canvas.width, canvas.height);
+//   ctx.fillStyle = "#cec0b6";
+//   ctx.fill();
+//   ctx.closePath();
+//   return;
+// }
 
-var drawDividers = function() {
-  ctx.beginPath();
-  var block_size = board.block_size;
-  for (var i = 0; i <= board.size; i++) {
-    if(i === board.size) {
-      ctx.rect(0, height - border_size, width, border_size);
-      ctx.rect(width - border_size, 0, border_size, height);
-    }
-    else {
-      ctx.rect(0, i * (block_size + border_size), width, border_size);
-      ctx.rect(i * (block_size + border_size), 0, border_size, height);
-    }
-  }
+// var drawDividers = function() {
+//   ctx.beginPath();
+//   var block_size = board.block_size;
+//   for (var i = 0; i <= board.size; i++) {
+//     if(i === board.size) {
+//       ctx.rect(0, height - border_size, width, border_size);
+//       ctx.rect(width - border_size, 0, border_size, height);
+//     }
+//     else {
+//       ctx.rect(0, i * (block_size + border_size), width, border_size);
+//       ctx.rect(i * (block_size + border_size), 0, border_size, height);
+//     }
+//   }
+//
+//   ctx.fillStyle = "#bdaca1";
+//   ctx.fill();
+//   ctx.closePath();
+// }
 
-  ctx.fillStyle = "#bdaca1";
-  ctx.fill();
-  ctx.closePath();
-}
-
-var draw = function(board) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  drawBG();
-  drawDividers();
-  board.draw();
-
-  requestAnimationFrame(function() {draw(board)});
-}
+// var draw = function(board) {
+//   ctx.clearRect(0, 0, canvas.width, canvas.height);
+//
+//   drawBG();
+//   drawDividers();
+//   board.draw();
+//
+//   requestAnimationFrame(function() {draw(board)});
+// }
 
 
 var board = new Board(2048, 4);
 
 document.addEventListener("keyup", board.move, false);
 
-draw(board);
+// draw(board);
