@@ -39,16 +39,78 @@ var Board = function(game_type, size) {
 
   this.moveDivHorizontal = function(row, to_col, from_col, val) {
     var old_piece = document.getElementById("p" + row + "_" + from_col);
-    old_piece.remove();
+    var initial_x = from_col * (this.block_size + border_size);
+    var end_x = to_col * (this.block_size + border_size);
+    var dx;
 
-    this.createNewDiv(row, to_col, val, true);
+    if (initial_x <= end_x) {
+      dx = 10;
+    } else {
+      dx = -10;
+    }
+
+    function move() {
+      initial_x += dx;
+
+      old_piece.style.left = initial_x + "px";
+
+      if(dx > 0) {
+        if (initial_x >= end_x) {
+          clearInterval(id);
+          old_piece.remove();
+          this.createNewDiv(row, to_col, val, true);
+          return;
+        }
+      }
+      else {
+        if (initial_x <= end_x) {
+          clearInterval(id);
+          old_piece.remove();
+          this.createNewDiv(row, to_col, val, true);
+          return;
+        }
+      }
+    }
+
+    var id = setInterval(move.bind(this), 5);
   }
 
   this.moveDivVertical = function(col, to_row, from_row, val) {
     var old_piece = document.getElementById("p" + from_row + "_" + col);
-    old_piece.remove();
+    var initial_y = from_row * (this.block_size + border_size);
+    var end_y = to_row * (this.block_size + border_size);
+    var dy;
 
-    this.createNewDiv(to_row, col, val, true);
+    if (initial_y <= end_y) {
+      dy = 10;
+    } else {
+      dy = -10;
+    }
+
+    function move() {
+      initial_y += dy;
+
+      old_piece.style.top = initial_y + "px";
+
+      if(dy > 0) {
+        if (initial_y >= end_y) {
+          clearInterval(id);
+          old_piece.remove();
+          this.createNewDiv(to_row, col, val, true);
+          return;
+        }
+      }
+      else {
+        if (initial_y <= end_y) {
+          clearInterval(id);
+          old_piece.remove();
+          this.createNewDiv(to_row, col, val, true);
+          return;
+        }
+      }
+    }
+
+    var id = setInterval(move.bind(this), 5);
   }
 
   // Combines pieces along rows
@@ -276,6 +338,7 @@ var Board = function(game_type, size) {
   }
 
   this.createNewDiv = function(row, col, val, isMove) {
+    console.log('creating');
     var div = document.createElement('div');
 
     div.id = "p" + row + "_" + col;
