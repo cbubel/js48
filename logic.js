@@ -41,14 +41,14 @@ var Board = function(game_type, size) {
     var old_piece = document.getElementById("p" + row + "_" + from_col);
     old_piece.remove();
 
-    this.createNewDiv(row, to_col, val);
+    this.createNewDiv(row, to_col, val, true);
   }
 
   this.moveDivVertical = function(col, to_row, from_row, val) {
     var old_piece = document.getElementById("p" + from_row + "_" + col);
     old_piece.remove();
 
-    this.createNewDiv(to_row, col, val);
+    this.createNewDiv(to_row, col, val, true);
   }
 
   // Combines pieces along rows
@@ -275,11 +275,12 @@ var Board = function(game_type, size) {
     }
   }
 
-  this.createNewDiv = function(row, col, val) {
+  this.createNewDiv = function(row, col, val, isMove) {
     var div = document.createElement('div');
 
     div.id = "p" + row + "_" + col;
-    div.className = "piece";
+    if(isMove) div.className = "piece";
+    else div.className = "piece new-piece";
     div.style.left = col * (this.block_size + border_size) + "px";
     div.style.top = row * (this.block_size + border_size) + "px";
     div.style.backgroundColor = block_colors[val];
@@ -315,7 +316,7 @@ var Board = function(game_type, size) {
 
     // Assign the new piece
     this.pieces[new_idx.row][new_idx.col] = random_base_piece;
-    this.createNewDiv(new_idx.row, new_idx.col, random_base_piece);
+    this.createNewDiv(new_idx.row, new_idx.col, random_base_piece, false);
   }
 
   this.move = function(e) {
