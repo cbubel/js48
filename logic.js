@@ -14,6 +14,7 @@ var Board = function(game_type, size) {
   this.pieces = [];
   this.block_size = (width - ((this.size + 1) * border_size)) / this.size;
   var made_move = false;
+  var game_over=false;
 
   for(var i = 0; i < this.size; i++) {
     this.pieces[i] = []
@@ -410,6 +411,36 @@ var Board = function(game_type, size) {
     // Assign the new piece
     this.pieces[new_idx.row][new_idx.col] = random_base_piece;
     this.createNewDiv(new_idx.row, new_idx.col, random_base_piece, false);
+
+    if(possible_pos.length==1){
+      this.check_full();
+    }
+  }
+
+  this.check_full = function() {
+    game_over = true;
+    for(var row = 0; row < this.size; row++) {
+      for(var col = 0; col < this.size; col++) {
+        if(row < this.size-1){
+          if(this.pieces[row][col] == this.pieces[row+1][col])
+            game_over = false;
+        }
+        if(row > 0){
+          if(this.pieces[row][col] == this.pieces[row-1][col])
+            game_over = false;
+        }
+        if(col < this.size-1){
+          if(this.pieces[row][col] == this.pieces[row][col+1])
+            game_over = false;
+        }
+        if(col > 0){
+          if(this.pieces[row][col] == this.pieces[row][col-1])
+            game_over = false;
+        }
+      }
+    }
+    if(game_over)
+      document.getElementById("over").innerHTML = "GAME OVER";
   }
 
   this.move = function(e) {
