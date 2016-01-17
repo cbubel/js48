@@ -375,6 +375,7 @@ var Board = function(game_type, size) {
     div.innerHTML = val;
     container.appendChild(div);
   }
+
   // Creates a new piece on the board at random
   this.addPiece = function() {
     var possible_pos = [];
@@ -402,7 +403,8 @@ var Board = function(game_type, size) {
   }
 
   this.move = function(e) {
-    console.log(this.pieces);
+    document.removeEventListener("keyup", board.move, false);
+
     var dir = e.keyCode;
     this.prev_pieces = this.pieces;
 
@@ -432,7 +434,7 @@ var Board = function(game_type, size) {
     }
     made_move = false;
 
-    return;
+    document.addEventListener("keyup", board.move, false);
   }.bind(this)
 
   // Initialize with two random pieces
