@@ -57,16 +57,24 @@ var Board = function(game_type, size) {
       if (dx > 0) {
         if (initial_x >= end_x) {
           old_piece.remove();
-          if(isCombine) this.removeDiv(row, to_col);
-          this.createNewDiv(row, to_col, val, true);
+          if(isCombine) {
+            this.upgradeDiv(row, to_col, val);
+          }
+          else {
+            this.createNewDiv(row, to_col, val, true);
+          }
           clearInterval(id);
         }
       }
       else {
         if (initial_x <= end_x) {
           old_piece.remove();
-          if(isCombine) this.removeDiv(row, to_col);
-          this.createNewDiv(row, to_col, val, true);
+          if(isCombine) {
+            this.upgradeDiv(row, to_col, val);
+          }
+          else {
+            this.createNewDiv(row, to_col, val, true);
+          }
           clearInterval(id);
         }
       }
@@ -75,7 +83,7 @@ var Board = function(game_type, size) {
     var id = setInterval(move.bind(this), 5);
   }
 
-  this.moveDivVertical = function(col, to_row, from_row, val) {
+  this.moveDivVertical = function(col, to_row, from_row, val, isCombine) {
     var old_piece = document.getElementById("p" + from_row + "_" + col);
     var initial_y = from_row * (this.block_size + border_size);
     var end_y = to_row * (this.block_size + border_size);
@@ -94,18 +102,26 @@ var Board = function(game_type, size) {
 
       if(dy > 0) {
         if (initial_y >= end_y) {
-          clearInterval(id);
           old_piece.remove();
-          this.createNewDiv(to_row, col, val, true);
-          return;
+          if(isCombine) {
+            this.upgradeDiv(to_row, col, val);
+          }
+          else {
+            this.createNewDiv(to_row, col, val, true);
+          }
+          clearInterval(id);
         }
       }
       else {
         if (initial_y <= end_y) {
-          clearInterval(id);
           old_piece.remove();
-          this.createNewDiv(to_row, col, val, true);
-          return;
+          if(isCombine) {
+            this.upgradeDiv(to_row, col, val);
+          }
+          else {
+            this.createNewDiv(to_row, col, val, true);
+          }
+          clearInterval(id);
         }
       }
     }
@@ -187,9 +203,10 @@ var Board = function(game_type, size) {
           else {
             if(this.pieces[row][col] === piece.val) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
-              this.upgradeDiv(piece.row, piece.col, piece.val * 2);
+              // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
-              this.removeDiv(row, col);
+              // this.removeDiv(row, col);
+              this.moveDivVertical(col, piece.row, row, piece.val * 2, true);
               piece = undefined;
               made_move = true;
             }
@@ -216,9 +233,10 @@ var Board = function(game_type, size) {
           else {
             if(this.pieces[row][col] === piece.val) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
-              this.upgradeDiv(piece.row, piece.col, piece.val * 2);
+              // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
-              this.removeDiv(row, col);
+              // this.removeDiv(row, col);
+              this.moveDivVertical(col, piece.row, row, piece.val * 2, true);
               piece = undefined;
               made_move = true;
             }
@@ -304,7 +322,7 @@ var Board = function(game_type, size) {
 
             made_move = true;
 
-            this.moveDivVertical(col, moving_to, row, val);
+            this.moveDivVertical(col, moving_to, row, val, false);
           }
         }
       }
@@ -331,7 +349,7 @@ var Board = function(game_type, size) {
 
             made_move = true;
 
-            this.moveDivVertical(col, moving_to, row, val);
+            this.moveDivVertical(col, moving_to, row, val, false);
           }
         }
       }
