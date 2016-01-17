@@ -37,7 +37,7 @@ var Board = function(game_type, size) {
     }
   }
 
-  this.moveDivHorizontal = function(row, to_col, from_col, val) {
+  this.moveDivHorizontal = function(row, to_col, from_col, val, isCombine) {
     var old_piece = document.getElementById("p" + row + "_" + from_col);
     var initial_x = from_col * (this.block_size + border_size);
     var end_x = to_col * (this.block_size + border_size);
@@ -54,20 +54,20 @@ var Board = function(game_type, size) {
 
       old_piece.style.left = initial_x + "px";
 
-      if(dx > 0) {
+      if (dx > 0) {
         if (initial_x >= end_x) {
-          clearInterval(id);
           old_piece.remove();
+          if(isCombine) this.removeDiv(row, to_col);
           this.createNewDiv(row, to_col, val, true);
-          return;
+          clearInterval(id);
         }
       }
       else {
         if (initial_x <= end_x) {
-          clearInterval(id);
           old_piece.remove();
+          if(isCombine) this.removeDiv(row, to_col);
           this.createNewDiv(row, to_col, val, true);
-          return;
+          clearInterval(id);
         }
       }
     }
@@ -127,9 +127,10 @@ var Board = function(game_type, size) {
           else {
             if(this.pieces[row][col] === piece.val) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
-              this.upgradeDiv(piece.row, piece.col, piece.val * 2);
+              // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
-              this.removeDiv(row, col);
+              // this.removeDiv(row, col);
+              this.moveDivHorizontal(row, piece.col, col, piece.val * 2, true);
               piece = undefined;
               made_move = true;
             }
@@ -156,9 +157,10 @@ var Board = function(game_type, size) {
           else {
             if(this.pieces[row][col] === piece.val) {
               this.pieces[piece.row][piece.col] = piece.val * 2;
-              this.upgradeDiv(piece.row, piece.col, piece.val * 2);
+              // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
-              this.removeDiv(row, col);
+              // this.removeDiv(row, col);
+              this.moveDivHorizontal(row, piece.col, col, piece.val * 2, true);
               piece = undefined;
               made_move = true;
             }
@@ -248,7 +250,7 @@ var Board = function(game_type, size) {
 
             made_move = true;
 
-            this.moveDivHorizontal(row, moving_to, col, val);
+            this.moveDivHorizontal(row, moving_to, col, val, false);
           }
         }
       }
@@ -275,7 +277,7 @@ var Board = function(game_type, size) {
 
             made_move = true;
 
-            this.moveDivHorizontal(row, moving_to, col, val);
+            this.moveDivHorizontal(row, moving_to, col, val, false);
           }
         }
       }
@@ -338,7 +340,6 @@ var Board = function(game_type, size) {
   }
 
   this.createNewDiv = function(row, col, val, isMove) {
-    console.log('creating');
     var div = document.createElement('div');
 
     div.id = "p" + row + "_" + col;
@@ -383,6 +384,7 @@ var Board = function(game_type, size) {
   }
 
   this.move = function(e) {
+    console.log(this.pieces);
     var dir = e.keyCode;
     this.prev_pieces = this.pieces;
 
