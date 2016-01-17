@@ -3,6 +3,8 @@ var container = document.getElementById("container");
 var width = 490;
 var height = 490;
 var border_size = 10;
+var game_score = 0;
+
 var block_colors = {2: "#efe3dc", 4: "#eddfcb", 8: "#f1b07d", 16: "#f3946b", 32: "#f47b66", 64: "#f55e44", 128: "#eccc7b", 256: "#eccb6b", 512: "#ecc65a", 1024: "#eec540", 2048: "#efc12f"};
 
 var Board = function(game_type, size) {
@@ -142,6 +144,8 @@ var Board = function(game_type, size) {
           }
           else {
             if(this.pieces[row][col] === piece.val) {
+              game_score += piece.val * 2;
+              document.getElementById("score").innerHTML = game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
               // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
@@ -172,6 +176,8 @@ var Board = function(game_type, size) {
           }
           else {
             if(this.pieces[row][col] === piece.val) {
+              game_score += piece.val * 2;
+              document.getElementById("score").innerHTML = game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
               // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
@@ -202,6 +208,8 @@ var Board = function(game_type, size) {
           }
           else {
             if(this.pieces[row][col] === piece.val) {
+              game_score += piece.val * 2;
+              document.getElementById("score").innerHTML = game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
               // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
@@ -232,6 +240,8 @@ var Board = function(game_type, size) {
           }
           else {
             if(this.pieces[row][col] === piece.val) {
+              game_score += piece.val * 2;
+              document.getElementById("score").innerHTML = game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
               // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
@@ -403,7 +413,12 @@ var Board = function(game_type, size) {
   }
 
   this.move = function(e) {
+
     document.removeEventListener("keyup", board.move, false);
+
+
+
+    console.log(this.pieces);
 
     var dir = e.keyCode;
     this.prev_pieces = this.pieces;
@@ -434,7 +449,11 @@ var Board = function(game_type, size) {
     }
     made_move = false;
 
+
     document.addEventListener("keyup", board.move, false);
+
+    return;
+
   }.bind(this)
 
   // Initialize with two random pieces
@@ -443,5 +462,6 @@ var Board = function(game_type, size) {
 }
 
 var board = new Board(2048, 4);
+
 
 document.addEventListener("keyup", board.move, false);
