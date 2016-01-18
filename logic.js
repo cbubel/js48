@@ -484,11 +484,42 @@ var Board = function(game_type, size) {
     div3.style.fontSize="100px";
     div3.style.zIndex= "1000";
     div3.innerHTML = "Your Score: "+this.game_score;
+
+    var retry = document.createElement('button');
+    retry.id="retry";
+    retry.style.textAlign="center";
+    retry.style.verticalAlign="middle";
+    retry.style.fontSize="80px";
+    retry.style.zIndex= "1000";
+    retry.innerHTML = "Retry?";
+    
     
     
     document.getElementById("gameOver").appendChild(div2);
     document.getElementById("gameOver").appendChild(div3);
-  
+    document.getElementById("gameOver").appendChild(retry);
+    
+    retry.addEventListener("click", function(){
+      board.clean();
+      document.body.removeChild(container);
+      board = new Board(2048,4);
+      document.body.appendChild(container);
+      //div.removeChild(div2);
+      //div2.remove();
+      
+      
+    });
+  }
+
+  this.clean = function() {
+    for(var row = 0; row < this.size; row++) {
+      for(var col = 0; col < this.size; col++) {
+        this.pieces[row][col] = 0;
+        var rePiece = document.getElementById("p" + row + "_" + col);
+        container.removeChild(rePiece);
+        
+      }
+    }
   }
 
   this.move = function(e) {
@@ -506,7 +537,7 @@ var Board = function(game_type, size) {
     if(dir === 37) {
       this.combineLeftHorizontal();
       this.evalLeft();
-      this.endGame();
+      
     }
     // Up
     else if(dir === 38) {
