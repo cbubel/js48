@@ -3,7 +3,7 @@ var container = document.getElementById("container");
 var width = 490;
 var height = 490;
 var border_size = 10;
-var game_score = 0;
+
 var windowWidth = window.innerWidth;
 var windowHeight = window.innerHeight;
 
@@ -15,6 +15,7 @@ var Board = function(game_type, size) {
   this.base_pieces = [2, 4];
   this.pieces = [];
   this.block_size = (width - ((this.size + 1) * border_size)) / this.size;
+  this.game_score =0;
   var made_move = false;
   var game_over=false;
 
@@ -147,8 +148,8 @@ var Board = function(game_type, size) {
           }
           else {
             if(this.pieces[row][col] === piece.val) {
-              game_score += piece.val * 2;
-              document.getElementById("score").innerHTML = game_score;
+              this.game_score += piece.val * 2;
+              document.getElementById("score").innerHTML = this.game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
               // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
@@ -179,8 +180,8 @@ var Board = function(game_type, size) {
           }
           else {
             if(this.pieces[row][col] === piece.val) {
-              game_score += piece.val * 2;
-              document.getElementById("score").innerHTML = game_score;
+              this.game_score += piece.val * 2;
+              document.getElementById("score").innerHTML = this.game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
               // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
@@ -211,8 +212,8 @@ var Board = function(game_type, size) {
           }
           else {
             if(this.pieces[row][col] === piece.val) {
-              game_score += piece.val * 2;
-              document.getElementById("score").innerHTML = game_score;
+              this.game_score += piece.val * 2;
+              document.getElementById("score").innerHTML = this.game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
               // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
@@ -243,8 +244,8 @@ var Board = function(game_type, size) {
           }
           else {
             if(this.pieces[row][col] === piece.val) {
-              game_score += piece.val * 2;
-              document.getElementById("score").innerHTML = game_score;
+              this.game_score += piece.val * 2;
+              document.getElementById("score").innerHTML = this.game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
               // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
@@ -453,8 +454,6 @@ var Board = function(game_type, size) {
 
     div.id = "gameOver";
     
-    
-
     div.style.left = "0px";
     div.style.top = "0px";
     div.style.width = windowWidth+"px";
@@ -466,9 +465,29 @@ var Board = function(game_type, size) {
     div.style.verticalAlign="middle";
     div.style.fontSize="100px";
     div.style.zIndex= "1000";
-    div.innerHTML = "GAME OVER";
+    
     
     document.body.appendChild(div);
+
+    var div2 = document.createElement('div');
+    div2.id="overText";
+    div2.style.textAlign="center";
+    div2.style.verticalAlign="middle";
+    div2.style.fontSize="100px";
+    div2.style.zIndex= "1000";
+    div2.innerHTML = "GAME OVER";
+
+    var div3 = document.createElement('div');
+    div3.id="scoreText";
+    div3.style.textAlign="center";
+    div3.style.verticalAlign="middle";
+    div3.style.fontSize="100px";
+    div3.style.zIndex= "1000";
+    div3.innerHTML = "Your Score: "+this.game_score;
+    
+    
+    document.getElementById("gameOver").appendChild(div2);
+    document.getElementById("gameOver").appendChild(div3);
   
   }
 
@@ -487,7 +506,7 @@ var Board = function(game_type, size) {
     if(dir === 37) {
       this.combineLeftHorizontal();
       this.evalLeft();
-
+      this.endGame();
     }
     // Up
     else if(dir === 38) {
