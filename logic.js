@@ -15,9 +15,11 @@ var Board = function(game_type, size) {
   this.base_pieces = [2, 4];
   this.pieces = [];
   this.block_size = (width - ((this.size + 1) * border_size)) / this.size;
-  this.game_score =0;
+  this.game_score = 0;
+  this.isWorking = false;
   var made_move = false;
-  var game_over=false;
+  var game_over = false;
+  var id = undefined;
 
   for(var i = 0; i < this.size; i++) {
     this.pieces[i] = []
@@ -43,7 +45,7 @@ var Board = function(game_type, size) {
     }
   }
 
-  this.moveDivHorizontal = function(row, to_col, from_col, val, isCombine) {
+  this.moveDivHorizontal = function(row, to_col, from_col, val, isMove) {
     var old_piece = document.getElementById("p" + row + "_" + from_col);
     var initial_x = from_col * (this.block_size + border_size);
     var end_x = to_col * (this.block_size + border_size);
@@ -55,41 +57,42 @@ var Board = function(game_type, size) {
       dx = -10;
     }
 
-    function move() {
+    function move(callback) {
       initial_x += dx;
 
       old_piece.style.left = initial_x + "px";
 
       if (dx > 0) {
         if (initial_x >= end_x) {
-          old_piece.remove();
-          if(isCombine) {
-            this.upgradeDiv(row, to_col, val);
-          }
-          else {
-            this.createNewDiv(row, to_col, val, true);
-          }
           clearInterval(id);
+          callback();
         }
       }
       else {
         if (initial_x <= end_x) {
-          old_piece.remove();
-          if(isCombine) {
-            this.upgradeDiv(row, to_col, val);
-          }
-          else {
-            this.createNewDiv(row, to_col, val, true);
-          }
           clearInterval(id);
+          callback();
         }
       }
     }
 
-    var id = setInterval(move.bind(this), 5);
+    var move_bundle = function() {
+      move(function() {
+        old_piece.remove();
+
+        if(isMove) {
+          this.createNewDiv(row, to_col, val, true);
+        }
+        else {
+          this.upgradeDiv(row, to_col, val);
+        }
+      }.bind(this));
+    }
+
+    var id = setInterval(move_bundle.bind(this), 5);
   }
 
-  this.moveDivVertical = function(col, to_row, from_row, val, isCombine) {
+  this.moveDivVertical = function(col, to_row, from_row, val, isMove) {
     var old_piece = document.getElementById("p" + from_row + "_" + col);
     var initial_y = from_row * (this.block_size + border_size);
     var end_y = to_row * (this.block_size + border_size);
@@ -101,38 +104,39 @@ var Board = function(game_type, size) {
       dy = -10;
     }
 
-    function move() {
+    function move(callback) {
       initial_y += dy;
 
       old_piece.style.top = initial_y + "px";
 
       if(dy > 0) {
         if (initial_y >= end_y) {
-          old_piece.remove();
-          if(isCombine) {
-            this.upgradeDiv(to_row, col, val);
-          }
-          else {
-            this.createNewDiv(to_row, col, val, true);
-          }
           clearInterval(id);
+          callback();
         }
       }
       else {
         if (initial_y <= end_y) {
-          old_piece.remove();
-          if(isCombine) {
-            this.upgradeDiv(to_row, col, val);
-          }
-          else {
-            this.createNewDiv(to_row, col, val, true);
-          }
           clearInterval(id);
+          callback();
         }
       }
     }
 
-    var id = setInterval(move.bind(this), 5);
+    var move_bundle = function() {
+      move(function() {
+        old_piece.remove();
+
+        if(isMove) {
+          this.createNewDiv(to_row, col, val, true);
+        }
+        else {
+          this.upgradeDiv(to_row, col, val);
+        }
+      }.bind(this));
+    }
+
+    var id = setInterval(move_bundle.bind(this), 5);
   }
 
   // Combines pieces along rows
@@ -151,10 +155,8 @@ var Board = function(game_type, size) {
               this.game_score += piece.val * 2;
               document.getElementById("score").innerHTML = this.game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
-              // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
-              // this.removeDiv(row, col);
-              this.moveDivHorizontal(row, piece.col, col, piece.val * 2, true);
+              this.moveDivHorizontal(row, piece.col, col, piece.val * 2, false);
               piece = undefined;
               made_move = true;
             }
@@ -183,10 +185,8 @@ var Board = function(game_type, size) {
               this.game_score += piece.val * 2;
               document.getElementById("score").innerHTML = this.game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
-              // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
-              // this.removeDiv(row, col);
-              this.moveDivHorizontal(row, piece.col, col, piece.val * 2, true);
+              this.moveDivHorizontal(row, piece.col, col, piece.val * 2, false);
               piece = undefined;
               made_move = true;
             }
@@ -215,10 +215,8 @@ var Board = function(game_type, size) {
               this.game_score += piece.val * 2;
               document.getElementById("score").innerHTML = this.game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
-              // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
-              // this.removeDiv(row, col);
-              this.moveDivVertical(col, piece.row, row, piece.val * 2, true);
+              this.moveDivVertical(col, piece.row, row, piece.val * 2, false);
               piece = undefined;
               made_move = true;
             }
@@ -247,10 +245,8 @@ var Board = function(game_type, size) {
               this.game_score += piece.val * 2;
               document.getElementById("score").innerHTML = this.game_score;
               this.pieces[piece.row][piece.col] = piece.val * 2;
-              // this.upgradeDiv(piece.row, piece.col, piece.val * 2);
               this.pieces[row][col] = 0;
-              // this.removeDiv(row, col);
-              this.moveDivVertical(col, piece.row, row, piece.val * 2, true);
+              this.moveDivVertical(col, piece.row, row, piece.val * 2, false);
               piece = undefined;
               made_move = true;
             }
@@ -282,7 +278,7 @@ var Board = function(game_type, size) {
 
             made_move = true;
 
-            this.moveDivHorizontal(row, moving_to, col, val, false);
+            this.moveDivHorizontal(row, moving_to, col, val, true);
           }
         }
       }
@@ -309,7 +305,8 @@ var Board = function(game_type, size) {
 
             made_move = true;
 
-            this.moveDivHorizontal(row, moving_to, col, val, false);
+            this.moveDivHorizontal(row, moving_to, col, val, true);
+
           }
         }
       }
@@ -336,7 +333,7 @@ var Board = function(game_type, size) {
 
             made_move = true;
 
-            this.moveDivVertical(col, moving_to, row, val, false);
+            this.moveDivVertical(col, moving_to, row, val, true);
           }
         }
       }
@@ -363,7 +360,7 @@ var Board = function(game_type, size) {
 
             made_move = true;
 
-            this.moveDivVertical(col, moving_to, row, val, false);
+            this.moveDivVertical(col, moving_to, row, val, true);
           }
         }
       }
@@ -415,7 +412,7 @@ var Board = function(game_type, size) {
     this.pieces[new_idx.row][new_idx.col] = random_base_piece;
     this.createNewDiv(new_idx.row, new_idx.col, random_base_piece, false);
 
-    if(possible_pos.length==1){
+    if(possible_pos.length === 1){
       this.check_full();
     }
   }
@@ -508,8 +505,6 @@ var Board = function(game_type, size) {
       // document.body.appendChild(container);
       //div.removeChild(div2);
       //div2.remove();
-
-
     });
   }
 
@@ -526,47 +521,39 @@ var Board = function(game_type, size) {
   }
 
   this.move = function(e) {
-
+    var dir = e.keyCode;
     document.removeEventListener("keyup", board.move, false);
 
+    var handleMove = function() {
+      // Left
+      if(dir === 37) {
+        this.combineLeftHorizontal();
+        this.evalLeft();
+      }
+      // Up
+      else if(dir === 38) {
+        this.combineUpVertical();
+        this.evalUp();
+      }
+      // Right
+      else if(dir === 39) {
+        this.combineRightHorizontal();
+        this.evalRight();
+      }
+      // Down
+      else if(dir === 40) {
+        this.combineDownVertical();
+        this.evalDown();
+      }
 
-
-    console.log(this.pieces);
-
-    var dir = e.keyCode;
-    this.prev_pieces = this.pieces;
-
-    // Left
-    if(dir === 37) {
-      this.combineLeftHorizontal();
-      this.evalLeft();
-
+      if(dir >= 37 && dir <= 40 && made_move) {
+        this.addPiece();
+      }
+      made_move = false;
+      document.addEventListener("keyup", board.move, false);
     }
-    // Up
-    else if(dir === 38) {
-      this.combineUpVertical();
-      this.evalUp();
-    }
-    // Right
-    else if(dir === 39) {
-      this.combineRightHorizontal();
-      this.evalRight();
-    }
-    // Down
-    else if(dir === 40) {
-      this.combineDownVertical();
-      this.evalDown();
-    }
 
-    if(dir >= 37 && dir <= 40 && made_move) {
-      this.addPiece();
-    }
-    made_move = false;
-
-
-    document.addEventListener("keyup", board.move, false);
-
-    return;
+    setTimeout(handleMove.bind(this), 200);
 
   }.bind(this)
 
