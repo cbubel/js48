@@ -453,7 +453,7 @@ var Board = function(game_type, size) {
     var div = document.createElement('div');
 
     div.id = "gameOver";
-    
+
     div.style.left = "0px";
     div.style.top = "0px";
     div.style.width = windowWidth+"px";
@@ -465,8 +465,8 @@ var Board = function(game_type, size) {
     div.style.verticalAlign="middle";
     div.style.fontSize="100px";
     div.style.zIndex= "1000";
-    
-    
+
+
     document.body.appendChild(div);
 
     var div2 = document.createElement('div');
@@ -492,32 +492,35 @@ var Board = function(game_type, size) {
     retry.style.fontSize="80px";
     retry.style.zIndex= "1000";
     retry.innerHTML = "Retry?";
-    
-    
-    
+
+
+
     document.getElementById("gameOver").appendChild(div2);
     document.getElementById("gameOver").appendChild(div3);
     document.getElementById("gameOver").appendChild(retry);
-    
+
     retry.addEventListener("click", function(){
       board.clean();
-      document.body.removeChild(container);
+      // document.body.removeChild(container);
       board = new Board(2048,4);
-      document.body.appendChild(container);
+      document.getElementById("gameOver").remove();
+      document.addEventListener("keyup", board.move, false);
+      // document.body.appendChild(container);
       //div.removeChild(div2);
       //div2.remove();
-      
-      
+
+
     });
   }
 
   this.clean = function() {
     for(var row = 0; row < this.size; row++) {
       for(var col = 0; col < this.size; col++) {
+        if (this.pieces[row][col] !== 0) {
+          var rePiece = document.getElementById("p" + row + "_" + col);
+          container.removeChild(rePiece);
+        }
         this.pieces[row][col] = 0;
-        var rePiece = document.getElementById("p" + row + "_" + col);
-        container.removeChild(rePiece);
-        
       }
     }
   }
@@ -537,7 +540,7 @@ var Board = function(game_type, size) {
     if(dir === 37) {
       this.combineLeftHorizontal();
       this.evalLeft();
-      
+
     }
     // Up
     else if(dir === 38) {
