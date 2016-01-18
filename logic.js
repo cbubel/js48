@@ -4,6 +4,8 @@ var width = 490;
 var height = 490;
 var border_size = 10;
 var game_score = 0;
+var windowWidth = window.innerWidth;
+var windowHeight = window.innerHeight;
 
 var block_colors = {2: "#efe3dc", 4: "#eddfcb", 8: "#f1b07d", 16: "#f3946b", 32: "#f47b66", 64: "#f55e44", 128: "#eccc7b", 256: "#eccb6b", 512: "#ecc65a", 1024: "#eec540", 2048: "#efc12f"};
 
@@ -439,8 +441,35 @@ var Board = function(game_type, size) {
         }
       }
     }
-    if(game_over)
-      document.getElementById("over").innerHTML = "GAME OVER";
+    if(game_over){
+      document.getElementById("over").innerHTML ="GAME OVER";
+      this.endGame();
+    }
+  }
+
+  this.endGame = function() {
+
+    var div = document.createElement('div');
+
+    div.id = "gameOver";
+    
+    
+
+    div.style.left = "0px";
+    div.style.top = "0px";
+    div.style.width = windowWidth+"px";
+    div.style.height = windowHeight+"px";
+    div.style.position = "absolute";
+    div.style.background = "darkgray";
+    div.style.opacity=".7";
+    div.style.textAlign="center";
+    div.style.verticalAlign="middle";
+    div.style.fontSize="100px";
+    div.style.zIndex= "1000";
+    div.innerHTML = "GAME OVER";
+    
+    document.body.appendChild(div);
+  
   }
 
   this.move = function(e) {
@@ -458,6 +487,7 @@ var Board = function(game_type, size) {
     if(dir === 37) {
       this.combineLeftHorizontal();
       this.evalLeft();
+
     }
     // Up
     else if(dir === 38) {
