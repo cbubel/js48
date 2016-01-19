@@ -520,7 +520,7 @@ var Board = function(game_type, size) {
     retry.style.zIndex= "1000";
     retry.style.background = "red";
     retry.style.borderStyle = "outset";
-    retry.style.borderWidth = "10px"; 
+    retry.style.borderWidth = "10px";
     retry.style.borderColor = "black";
     retry.innerHTML = "Retry?";
 
@@ -544,7 +544,7 @@ var Board = function(game_type, size) {
       //document.addEventListener("keyup", board.move, false);
 
     }
-  
+
 
   this.clean = function() {
     for(var row = 0; row < this.size; row++) {
@@ -564,7 +564,7 @@ var Board = function(game_type, size) {
     var div = document.createElement('div');
 
     div.id = "won";
-    
+
     div.style.left = "0px";
     div.style.top = "0px";
     div.style.width = windowWidth+"px";
@@ -576,9 +576,9 @@ var Board = function(game_type, size) {
     div.style.verticalAlign="middle";
     div.style.fontSize="75px";
     div.style.zIndex= "1000";
-    
-    
-    
+
+
+
     document.body.appendChild(div);
 
     var textDiv = document.createElement('div');
@@ -598,54 +598,40 @@ var Board = function(game_type, size) {
   }
 
   this.move = function(e) {
-
     var dir = e.keyCode;
     console.log('move');
-
-
-
     document.removeEventListener("keyup", board.move, false);
 
+    var handleMove = function() {
+      // Left
+      if(dir === 37) {
+        this.combineLeftHorizontal();
+        this.evalLeft();
+      }
+      // Up
+      else if(dir === 38) {
+        this.combineUpVertical();
+        this.evalUp();
+      }
+      // Right
+      else if(dir === 39) {
+        this.combineRightHorizontal();
+        this.evalRight();
+      }
+      // Down
+      else if(dir === 40) {
+        this.combineDownVertical();
+        this.evalDown();
+      }
 
-
-    console.log(this.pieces);
-
-    var dir = e.keyCode;
-    this.prev_pieces = this.pieces;
-
-    // Left
-    if(dir === 37) {
-      this.combineLeftHorizontal();
-      this.evalLeft();
-
-      //this.endGame();
-
-    }
-    // Up
-    else if(dir === 38) {
-      this.combineUpVertical();
-      this.evalUp();
-    }
-    // Right
-    else if(dir === 39) {
-      this.combineRightHorizontal();
-      this.evalRight();
-    }
-    // Down
-    else if(dir === 40) {
-      this.combineDownVertical();
-      this.evalDown();
+      if(dir >= 37 && dir <= 40 && made_move) {
+        this.addPiece();
+      }
+      made_move = false;
+      document.addEventListener("keyup", board.move, false);
     }
 
-    if(dir >= 37 && dir <= 40 && made_move) {
-      this.addPiece();
-    }
-    made_move = false;
-
-
-    document.addEventListener("keyup", board.move, false);
-
-    return;
+    setTimeout(handleMove.bind(this), 200);
 
   }.bind(this)
 
