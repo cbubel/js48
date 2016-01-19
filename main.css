@@ -4,13 +4,14 @@
 }
 
 body {
-  margin-top: 20px;
+  margin-top:10px;
   font-family: arial;
 }
 
 #container {
   width: 490px;
   height: 490px;
+  
   border: 10px solid #bdaca1;
   box-sizing: border-box;
   margin: 0 auto;
@@ -61,12 +62,14 @@ body {
   animation-name: create;
   animation-duration: 250ms;
 }
+
 #top {
-   position:absolute;
-   margin-left:75px;
-   margin-top:20px;
+   position: absolute;
+   left:75px;
+   top:25px;
+
    width:100px;
-   height:75px;
+   height:40px;
    background:#C0741D;
    text-align:center;
    border-style: outset;

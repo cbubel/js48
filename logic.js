@@ -487,7 +487,7 @@ var Board = function(game_type, size) {
     div.style.height = windowHeight+"px";
     div.style.position = "absolute";
     div.style.background = "darkgray";
-    div.style.opacity=".7";
+    div.style.opacity=".8";
     div.style.textAlign="center";
     div.style.verticalAlign="middle";
     div.style.fontSize="100px";
@@ -518,6 +518,10 @@ var Board = function(game_type, size) {
     retry.style.verticalAlign="middle";
     retry.style.fontSize="80px";
     retry.style.zIndex= "1000";
+    retry.style.background = "red";
+    retry.style.borderStyle = "outset";
+    retry.style.borderWidth = "10px"; 
+    retry.style.borderColor = "black";
     retry.innerHTML = "Retry?";
 
 
@@ -531,17 +535,16 @@ var Board = function(game_type, size) {
       // document.body.removeChild(container);
       board = new Board(2048,4);
       document.getElementById("gameOver").remove();
-<<<<<<< Updated upstream
       document.addEventListener("keyup", board.move.bind(board), false);
       // document.body.appendChild(container);
       //div.removeChild(div2);
       //div2.remove();
     }.bind(this));
-=======
+
       //document.addEventListener("keyup", board.move, false);
 
-    });
-  }
+    }
+  
 
   this.clean = function() {
     for(var row = 0; row < this.size; row++) {
@@ -553,7 +556,7 @@ var Board = function(game_type, size) {
         this.pieces[row][col] = 0;
       }
     }
->>>>>>> Stashed changes
+
   }
 
   this.won = function(){
@@ -568,24 +571,39 @@ var Board = function(game_type, size) {
     div.style.height = windowHeight+"px";
     div.style.position = "absolute";
     div.style.background = "yellow";
-    div.style.opacity=".7";
+    div.style.opacity=".8";
     div.style.textAlign="center";
     div.style.verticalAlign="middle";
     div.style.fontSize="75px";
     div.style.zIndex= "1000";
-    div.innerHTML = "Congrats! You've reached " + this.winning_number + "!";
+    
     
     
     document.body.appendChild(div);
+
+    var textDiv = document.createElement('div');
+
+    textDiv.id = "winning_text";
+    textDiv.style.background = "#FFD700";
+    textDiv.style.width = "750px";
+    textDiv.style.height = "200px";
+    textDiv.style.zIndex = "1000";
+    //textDiv.style.position = "relative";
+    //textDiv.style.top = "100px";
+    textDiv.style.borderStyle = "outset";
+    textDiv.style.borderWidth = "30px";
+    textDiv.style.margin = "auto";
+    textDiv.innerHTML = "Congratulations! <br> You've reached " + this.winning_number + "!";
+    document.getElementById("won").appendChild(textDiv);
   }
 
   this.move = function(e) {
-<<<<<<< Updated upstream
+
     var dir = e.keyCode;
     console.log('move');
-=======
 
->>>>>>> Stashed changes
+
+
     document.removeEventListener("keyup", board.move, false);
 
 
