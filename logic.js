@@ -9,6 +9,8 @@ var windowHeight = window.innerHeight;
 
 var block_colors = {2: "#efe3dc", 4: "#eddfcb", 8: "#f1b07d", 16: "#f3946b", 32: "#f47b66", 64: "#f55e44", 128: "#eccc7b", 256: "#eccb6b", 512: "#ecc65a", 1024: "#eec540", 2048: "#efc12f"};
 
+var board;
+
 var Board = function(game_type, size) {
   this.game_type = game_type;
   this.size = size;
@@ -445,6 +447,18 @@ var Board = function(game_type, size) {
     }
   }
 
+  this.clean = function() {
+    for(var row = 0; row < this.size; row++) {
+      for(var col = 0; col < this.size; col++) {
+        if (this.pieces[row][col] !== 0) {
+          var rePiece = document.getElementById("p" + row + "_" + col);
+          container.removeChild(rePiece);
+        }
+        this.pieces[row][col] = 0;
+      }
+    }
+  }
+
   this.endGame = function() {
 
     var div = document.createElement('div');
@@ -497,31 +511,20 @@ var Board = function(game_type, size) {
     document.getElementById("gameOver").appendChild(retry);
 
     retry.addEventListener("click", function(){
-      board.clean();
+      this.clean();
       // document.body.removeChild(container);
       board = new Board(2048,4);
       document.getElementById("gameOver").remove();
-      document.addEventListener("keyup", board.move, false);
+      document.addEventListener("keyup", board.move.bind(board), false);
       // document.body.appendChild(container);
       //div.removeChild(div2);
       //div2.remove();
-    });
-  }
-
-  this.clean = function() {
-    for(var row = 0; row < this.size; row++) {
-      for(var col = 0; col < this.size; col++) {
-        if (this.pieces[row][col] !== 0) {
-          var rePiece = document.getElementById("p" + row + "_" + col);
-          container.removeChild(rePiece);
-        }
-        this.pieces[row][col] = 0;
-      }
-    }
+    }.bind(this));
   }
 
   this.move = function(e) {
     var dir = e.keyCode;
+    console.log('move');
     document.removeEventListener("keyup", board.move, false);
 
     var handleMove = function() {
@@ -562,7 +565,6 @@ var Board = function(game_type, size) {
   this.addPiece();
 }
 
-var board = new Board(2048, 4);
-
+board = new Board(2048, 4);
 
 document.addEventListener("keyup", board.move, false);
